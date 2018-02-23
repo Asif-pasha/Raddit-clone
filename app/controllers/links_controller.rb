@@ -1,4 +1,5 @@
 class LinksController < ApplicationController
+  before_action :authenticate_user!,except: [:index, :show]
   before_action :set_link, only: [:show, :edit, :update, :destroy]
 
   # GET /links
@@ -56,11 +57,20 @@ class LinksController < ApplicationController
   def destroy
     @link.destroy
     respond_to do |format|
-      format.html { redirect_to root, notice: 'Link was successfully destroyed.' }
+      format.html { redirect_to links_url, notice: 'Link was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
-
+  def upvote
+    @link =Link.find(params[:id])
+    @link.upvote_by current_user
+    redirect_to :back
+  end
+  def downvote
+    @link =Link.find(params[:id])
+    @link.downvote_by current_user
+    redirect_to :back
+  end
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_link
